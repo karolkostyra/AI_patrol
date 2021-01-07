@@ -5,21 +5,60 @@ using UnityEngine.AI;
 
 public class AgentController : MonoBehaviour
 {
-    [SerializeField] private GameObject[] wayPoints;
+    [SerializeField] private GameObject[] waypoints;
     [SerializeField] private Camera cam;
     [SerializeField] private NavMeshAgent agent;
 
+    [SerializeField] private int currentWaypointIndex;
+
+    private void Start()
+    {
+        currentWaypointIndex = -1;
+        //MoveToPosition(GetWayPointPosition(wayPoints[currentWayPointIndex]));
+    }
+
+    /*
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (currentWayPointIndex < wayPoints.Length && gameObject.transform.position == GetWayPointPosition(wayPoints[currentWayPointIndex]))
         {
-            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-
-            if(Physics.Raycast(ray, out hit))
-            {
-                agent.SetDestination(hit.point);
-            }
+            currentWayPointIndex++;
+            MoveToPosition(GetWayPointPosition(wayPoints[currentWayPointIndex]));
         }
+
+    }
+    */
+
+    private void Update()
+    {
+        Debug.Log("ENABLED");
+        if(currentWaypointIndex < waypoints.Length)
+        {
+            currentWaypointIndex++;
+            MoveToPosition(GetWaypointPosition(waypoints[currentWaypointIndex]));
+            enabled = false;
+        }
+    }
+
+    private void MoveToPosition(Vector3 newPosition)
+    {
+        agent.SetDestination(newPosition);
+    }
+
+    private Vector3 GetWaypointPosition(GameObject waypoint)
+    {
+        return waypoint.GetComponent<Transform>().position;
+    }
+
+    IEnumerator WaitToEnable(float time)
+    {
+        yield return new WaitForSeconds(time);
+        enabled = true;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        Debug.Log("TRIGGER ENTER");
+        StartCoroutine(WaitToEnable(1f));
     }
 }
