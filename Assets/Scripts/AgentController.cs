@@ -13,7 +13,7 @@ public class AgentController : MonoBehaviour
 
     private void Start()
     {
-        currentWaypointIndex = -1;
+        currentWaypointIndex = 0;
         //MoveToPosition(GetWayPointPosition(wayPoints[currentWayPointIndex]));
     }
 
@@ -31,12 +31,16 @@ public class AgentController : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log("ENABLED");
+        //Debug.Log("ENABLED");
         if(currentWaypointIndex < waypoints.Length)
         {
-            currentWaypointIndex++;
+            //currentWaypointIndex++;
             MoveToPosition(GetWaypointPosition(waypoints[currentWaypointIndex]));
             enabled = false;
+        }
+        else
+        {
+            agent.isStopped = true;
         }
     }
 
@@ -58,7 +62,13 @@ public class AgentController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("TRIGGER ENTER");
-        StartCoroutine(WaitToEnable(1f));
+        if (currentWaypointIndex < waypoints.Length && other.gameObject == waypoints[currentWaypointIndex])
+        {
+            currentWaypointIndex++;
+
+            MoveToPosition(transform.position);
+            //Debug.Log("TRIGGER ENTER");
+            StartCoroutine(WaitToEnable(1f));
+        }
     }
 }
